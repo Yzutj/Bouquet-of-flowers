@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,7 +33,7 @@
     cursor: default;
   }
 
-  /* floating particles / confetti-like floating petals */
+  /* floating particles / romantic petals (replaces popup confetti) */
   .floating-petals {
     position: absolute;
     top: 0;
@@ -255,36 +256,73 @@
     background: linear-gradient(95deg, #ff708d, #ff1e4e);
   }
 
-  /* music visualizer small accent (soft vibe) */
-  .music-note {
+  /* music visualizer with album art style - "About You" theme */
+  .music-player-indicator {
     position: fixed;
     bottom: 30px;
     left: 30px;
-    background: rgba(255, 245, 250, 0.7);
-    backdrop-filter: blur(8px);
+    background: rgba(255, 245, 250, 0.85);
+    backdrop-filter: blur(12px);
     border-radius: 60px;
-    padding: 10px 18px;
+    padding: 10px 20px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     color: #ff4d6d;
     z-index: 25;
     display: flex;
     align-items: center;
     gap: 12px;
-    font-family: monospace;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    border: 1px solid rgba(255, 100, 130, 0.3);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    border: 1px solid rgba(255, 100, 130, 0.4);
     pointer-events: none;
+    font-family: monospace;
   }
 
   .music-icon {
-    font-size: 20px;
+    font-size: 22px;
     animation: pulseNote 1.2s infinite;
+  }
+
+  .song-title {
+    font-family: 'Segoe UI', sans-serif;
+    letter-spacing: 0.3px;
+    background: linear-gradient(135deg, #ff5e7e, #ff8aa8);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    font-weight: 700;
   }
 
   @keyframes pulseNote {
     0% { opacity: 0.5; transform: scale(0.9);}
     100% { opacity: 1; transform: scale(1.1);}
+  }
+
+  /* visualizer wave effect */
+  .wave-bars {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+    height: 20px;
+  }
+
+  .wave-bars span {
+    width: 3px;
+    height: 8px;
+    background: #ff5e7e;
+    border-radius: 2px;
+    animation: wave 0.8s infinite ease alternate;
+  }
+
+  .wave-bars span:nth-child(1) { animation-delay: 0s; height: 12px; }
+  .wave-bars span:nth-child(2) { animation-delay: 0.2s; }
+  .wave-bars span:nth-child(3) { animation-delay: 0.4s; }
+  .wave-bars span:nth-child(4) { animation-delay: 0.6s; }
+  .wave-bars span:nth-child(5) { animation-delay: 0.8s; }
+
+  @keyframes wave {
+    0% { height: 6px; opacity: 0.4; }
+    100% { height: 18px; opacity: 1; }
   }
 
   /* responsive */
@@ -294,12 +332,14 @@
     .message-card-btn span { font-size: 36px; }
     .popup-card { padding: 1.5rem 1.2rem; }
     #typed-message { font-size: 0.95rem; }
+    .music-player-indicator { padding: 6px 14px; bottom: 20px; left: 20px; }
+    .song-title { font-size: 11px; }
   }
 </style>
 </head>
 <body>
 
-<!-- floating petals / subtle confetti-like romantic effect (NO popup confetti) -->
+<!-- floating petals / romantic atmosphere (NO popup confetti) -->
 <div class="floating-petals" id="petalContainer"></div>
 
 <!-- glowing background aura -->
@@ -310,11 +350,13 @@
   <img src="bouquet.png" class="bouquet" alt="Graduation Bouquet" id="bouquetImg" onerror="this.src='https://placehold.co/400x500/ffe6f0/ff4d6d?text=🌹+Bouquet+🌷';">
 </div>
 
-<!-- music note indicator (just style) -->
-<div class="music-note">
-  <span class="music-icon">🎵</span> 
-  <span>“About You” ♪</span>
-  <span style="font-size:12px; opacity:0.8;">✨</span>
+<!-- music player indicator - "About You" theme -->
+<div class="music-player-indicator">
+  <span class="music-icon">🎵</span>
+  <span class="song-title">♫ About You ♫</span>
+  <div class="wave-bars">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
 </div>
 
 <!-- message button (floating) -->
@@ -337,26 +379,19 @@
   </div>
 </div>
 
-<!-- Background Music: "About You" – using a high quality lofi / romantic instrumental that matches the vibe 
-     I'm embedding a known romantic cinematic track "About You" inspired version (royalty-free aesthetic) 
-     Alternatively a soft guitar/piano cover that feels like "About You" by The 1975 vibe. 
-     Using a beautiful romantic melody from free music archive with proper credit. -->
+<!-- Background Music: "About You" - using your uploaded MP3 file -->
 <audio id="bgMusic" loop preload="auto">
   <source src="about-you.mp3" type="audio/mpeg">
-  <!-- fallback track that matches romantic & exciting about-you atmosphere -->
-  Your browser does not support the audio element.
+  Your browser does not support the audio element. The romantic track "About You" will play in supported browsers.
 </audio>
 
-<!-- Canvas confetti library (but we will use it only for gentle floating celebrations on button click, 
-     BUT NOT on popup open? Actually requirement says: Remove the pop up confetti. 
-     So we ensure no confetti fires when popup opens. Instead we use floating petal burst effect. 
-     We'll keep confetti library but won't trigger on popup open. Only graceful floating petals. -->
+<!-- Canvas confetti library (kept but NOT used on popup - only for optional ambient shimmer) -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
 <script>
   // ------------------------- CUSTOMIZABLE -------------------------
   const receiverName = "Perd";      // graduate name
-  const fullMessage = `✨ Happy Graduation, dear ${receiverName}! ✨<br><br>🎓 This bouquet celebrates your amazing journey! Your dedication and brilliance brought you here. Wishing you endless success, new adventures, and a future as bright as your smile. <br><br>💖 You did it! So proud of you. 🌟`;
+  const fullMessage = `✨ Happy Graduation, dear ${receiverName}! ✨<br><br>🎓 This bouquet celebrates your amazing journey! Your dedication and brilliance brought you here. Wishing you endless success, new adventures, and a future as bright as your smile. <br><br>💖 You did it! So proud of you. 🌟<br><br>🎶 "About You" — this song is for you! 🎶`;
   // ----------------------------------------------------------------
 
   // DOM elements
@@ -366,19 +401,21 @@
   const messageBtn = document.getElementById("messageBtn");
   const closePopupBtn = document.getElementById("closePopupBtn");
 
-  // 1) Setup music: auto-play with user interaction fallback (romantic about-you atmosphere)
+  // 1) Setup "About You" music: romantic & exciting atmosphere
   let musicStarted = false;
   
   function initMusic() {
     music.volume = 0.55;
     music.loop = true;
-    // attempt autoplay (will be blocked but we'll start on first interaction)
+    // attempt autoplay (will be blocked by browsers, but we'll start on first interaction)
     music.play().catch(() => {
       // auto play prevented – we'll start on any tap/click globally
       const startMusicOnInteraction = () => {
         if (!musicStarted) {
           music.play().then(() => {
             musicStarted = true;
+            // add small animation to wave bars when music starts
+            activateWaveAnimation();
           }).catch(e => console.log("audio play still blocked"));
         }
         document.removeEventListener('click', startMusicOnInteraction);
@@ -388,12 +425,21 @@
       document.addEventListener('touchstart', startMusicOnInteraction);
     }).then(() => {
       musicStarted = true;
+      activateWaveAnimation();
     });
   }
+  
+  function activateWaveAnimation() {
+    const waveBars = document.querySelectorAll('.wave-bars span');
+    waveBars.forEach(bar => {
+      bar.style.animation = 'wave 0.8s infinite ease alternate';
+    });
+  }
+  
   initMusic();
 
   // 2) Create floating petals / romantic sparkle effect (instead of popup confetti)
-  function createFloatingPetals(count = 65) {
+  function createFloatingPetals(count = 95) {
     const container = document.getElementById('petalContainer');
     for (let i = 0; i < count; i++) {
       const petal = document.createElement('div');
@@ -416,34 +462,30 @@
 
   // 3) Enhanced burst of petals (romantic effect instead of popup confetti)
   function burstPetals() {
-    // burst 30 instant floating petals from the message button area
     const container = document.getElementById('petalContainer');
-    for (let i = 0; i < 32; i++) {
+    for (let i = 0; i < 38; i++) {
       const petal = document.createElement('div');
       petal.classList.add('petal');
       const size = Math.random() * 12 + 5;
       petal.style.width = `${size}px`;
       petal.style.height = `${size}px`;
       petal.style.position = 'absolute';
-      petal.style.left = `${window.innerWidth / 2 + (Math.random() - 0.5) * 200}px`;
-      petal.style.top = `${window.innerHeight - 80 + (Math.random() * 60)}px`;
+      petal.style.left = `${window.innerWidth / 2 + (Math.random() - 0.5) * 220}px`;
+      petal.style.top = `${window.innerHeight - 80 + (Math.random() * 70)}px`;
       petal.style.animationDuration = `${Math.random() * 3 + 2.5}s`;
-      petal.style.opacity = '0.8';
+      petal.style.opacity = '0.85';
       petal.style.background = `radial-gradient(circle, #ffc0d0, #ff6b8b)`;
       petal.style.pointerEvents = 'none';
       container.appendChild(petal);
       setTimeout(() => { petal.remove(); }, 3500);
     }
-    // also create tiny sparkle using canvas-confetti but very mild - but we skip popup related. 
-    // optional: slight shimmer but not popup confetti. I'll add minimal shimmer effect around bouquet
-    // not from popup. just to enhance mood.
+    // gentle shimmer (not popup confetti) - just ambiance
     if (typeof confetti === 'function') {
-      // gentle shimmer unrelated to popup (ambiance)
       confetti({
-        particleCount: 18,
-        spread: 35,
-        startVelocity: 12,
-        origin: { y: 0.75, x: 0.5 },
+        particleCount: 15,
+        spread: 30,
+        startVelocity: 8,
+        origin: { y: 0.8, x: 0.5 },
         colors: ['#ffb3c6', '#ff90b0', '#f9c74f'],
         decay: 0.9,
         disableForReducedMotion: true
@@ -470,9 +512,6 @@
           i++;
         }
         setTimeout(typeNext, speed);
-      } else {
-        // end of typing: add final gentle effect
-        element.style.transition = "all 0.2s";
       }
     }
     typeNext();
@@ -485,7 +524,7 @@
     if (isPopupOpen) return;
     isPopupOpen = true;
     
-    // ensure music is playing (romantic "About You" style)
+    // ensure "About You" music is playing
     if (music.paused) {
       music.play().catch(e => console.log("music play on open"));
       musicStarted = true;
@@ -497,7 +536,7 @@
     // start typing the beautiful message
     typeMessage(typedMessageDiv, fullMessage);
     
-    // Burst petals around button & bouquet as celebration (elegant, not overwhelming)
+    // Burst petals as celebration (elegant, not overwhelming)
     burstPetals();
     
     // Slight bounce animation on bouquet when popup opens
@@ -511,7 +550,7 @@
     }, 400);
     
     // Additional floating glitters (soft sparkles) without confetti popup
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 16; i++) {
       const spark = document.createElement('div');
       spark.style.position = 'fixed';
       spark.style.width = '6px';
@@ -529,7 +568,7 @@
     }
   }
   
-  // define sparkle fade keyframe (dynamic)
+  // define sparkle fade keyframe
   const styleSheet = document.createElement("style");
   styleSheet.textContent = `
     @keyframes sparkleFade {
@@ -556,17 +595,16 @@
     }
   });
   
-  // Additional romantic ambiance: floating hearts on bouquet hover
+  // Romantic ambiance: floating hearts on bouquet hover
   const bouquet = document.querySelector('.bouquet');
-  bouquet.addEventListener('mouseenter', () => {
-    // little heart effect
-    for (let i = 0; i < 8; i++) {
+  bouquet.addEventListener('mouseenter', (e) => {
+    for (let i = 0; i < 10; i++) {
       const heart = document.createElement('div');
       heart.innerHTML = '🌸';
       heart.style.position = 'fixed';
       heart.style.fontSize = '18px';
-      heart.style.left = `${event.clientX + (Math.random() - 0.5) * 50}px`;
-      heart.style.top = `${event.clientY - 20 + (Math.random() * 40)}px`;
+      heart.style.left = `${e.clientX + (Math.random() - 0.5) * 60}px`;
+      heart.style.top = `${e.clientY - 20 + (Math.random() * 50)}px`;
       heart.style.pointerEvents = 'none';
       heart.style.opacity = '0.7';
       heart.style.zIndex = '100';
@@ -582,18 +620,24 @@
   heartAnim.textContent = `
     @keyframes floatHeart {
       0% { transform: translateY(0) scale(0.5); opacity: 0.8; }
-      100% { transform: translateY(-60px) scale(1.2); opacity: 0; }
+      100% { transform: translateY(-70px) scale(1.3); opacity: 0; }
     }
   `;
   document.head.appendChild(heartAnim);
   
-  // subtle music-reactive glow (optional, just adds elegance)
+  // subtle music-reactive glow
   setInterval(() => {
-    if (!music.paused) {
-      const intensity = 0.05;
+    if (!music.paused && musicStarted) {
       const glowAura = document.querySelector('.glow-aura');
       if (glowAura) {
         glowAura.style.transform = `translate(-50%, -50%) scale(${1 + Math.sin(Date.now() * 0.003) * 0.02})`;
+      }
+      // pulse wave bars when music plays
+      const waveBars = document.querySelectorAll('.wave-bars span');
+      if (waveBars.length) {
+        waveBars.forEach((bar, idx) => {
+          bar.style.animationDuration = `${0.6 + Math.sin(Date.now() * 0.005 + idx) * 0.2}s`;
+        });
       }
     }
   }, 300);
@@ -601,7 +645,7 @@
   // bouquet double click: send extra love
   bouquet.addEventListener('dblclick', () => {
     burstPetals();
-    for (let i = 0; i < 25; i++) {
+    for (let i = 0; i < 30; i++) {
       const flowerGlow = document.createElement('div');
       flowerGlow.style.position = 'fixed';
       flowerGlow.style.width = '10px';
@@ -624,11 +668,10 @@
     bouquetImg.src = 'https://placehold.co/500x600/fdeff2/ff4d6d?text=🎓✨+Graduation+Bouquet+✨🎓';
   });
   
-  // add a tiny greeting on page load - no popup confetti, just petals flourish
+  // add a gentle welcome on load - romantic petals flourish
   window.addEventListener('load', () => {
     setTimeout(() => {
-      // gentle petal fall burst to welcome
-      for (let i=0; i<25; i++) {
+      for (let i=0; i<30; i++) {
         const welcomingPetal = document.createElement('div');
         welcomingPetal.classList.add('petal');
         welcomingPetal.style.width = `${Math.random() * 12 + 5}px`;
@@ -641,10 +684,21 @@
         setTimeout(() => welcomingPetal.remove(), 4000);
       }
     }, 400);
+    
+    // try to load music file with "About You"
+    console.log("✨ Graduation bouquet ready — 'About You' by The 1975 vibe playing from your uploaded MP3");
   });
   
-  // manually ensure music is "About You" romantic style: we embedded a soft piano track that feels intimate & uplifting.
-  console.log("✨ Graduation bouquet ready – romantic 'About You' vibes flowing");
+  // Add audio error handling to show friendly message if file missing
+  music.addEventListener('error', () => {
+    console.warn("About You MP3 file not found or unsupported. Ensure 'about-you.mp3' is in same folder.");
+    const indicator = document.querySelector('.music-player-indicator');
+    if (indicator) {
+      indicator.style.opacity = '0.7';
+      indicator.style.backgroundColor = '#fff0f3';
+    }
+  });
 </script>
 </body>
 </html>
+```
